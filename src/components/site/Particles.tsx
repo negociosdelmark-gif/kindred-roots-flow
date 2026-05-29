@@ -1,8 +1,19 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
+
+type Particle = {
+  left: number;
+  size: number;
+  duration: number;
+  delay: number;
+  opacity: number;
+  key: number;
+};
 
 export function Particles({ count = 22 }: { count?: number }) {
-  const items = useMemo(
-    () =>
+  const [items, setItems] = useState<Particle[]>([]);
+
+  useEffect(() => {
+    setItems(
       Array.from({ length: count }).map((_, i) => ({
         left: Math.random() * 100,
         size: 4 + Math.random() * 8,
@@ -11,8 +22,8 @@ export function Particles({ count = 22 }: { count?: number }) {
         opacity: 0.3 + Math.random() * 0.5,
         key: i,
       })),
-    [count],
-  );
+    );
+  }, [count]);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
@@ -33,3 +44,4 @@ export function Particles({ count = 22 }: { count?: number }) {
     </div>
   );
 }
+
