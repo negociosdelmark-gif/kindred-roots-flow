@@ -20,6 +20,9 @@ export const submitContactMessage = createServerFn({ method: "POST" })
       service_type: data.service_type || null,
       message: data.message,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[contact_messages.insert]", error);
+      throw new Error("No se pudo guardar tu mensaje. Intenta de nuevo más tarde.");
+    }
     return { ok: true };
   });
