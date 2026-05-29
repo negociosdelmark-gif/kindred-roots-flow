@@ -36,7 +36,7 @@ import { Particles } from "@/components/site/Particles";
 import { Reveal } from "@/components/site/Reveal";
 import { ContactForm } from "@/components/site/ContactForm";
 
-const WHATSAPP_URL = "https://wa.me/573132655265";
+const WHATSAPP_URL = `https://wa.me/573132655265?text=${encodeURIComponent("Hola Eliána, me gustaría agendar una sesión de Constelaciones Familiares")}`;
 const PHONE_DISPLAY = "+57 313 265 5265";
 
 export const Route = createFileRoute("/")({
