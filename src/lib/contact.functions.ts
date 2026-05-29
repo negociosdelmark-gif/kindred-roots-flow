@@ -14,12 +14,17 @@ export const submitContactMessage = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => ContactSchema.parse(input))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin.from("contact_messages").insert({
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("contact_messages").insert({
       name: data.name,
       email: data.email,
       phone: data.phone || null,
       service_type: data.service_type || null,
       message: data.message,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[contact_messages.insert]", error);
+      throw new Error("No se pudo guardar tu mensaje. Intenta de nuevo más tarde.");
+    }
     return { ok: true };
   });

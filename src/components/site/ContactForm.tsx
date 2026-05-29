@@ -35,8 +35,9 @@ export function ContactForm() {
       });
       e.currentTarget.reset();
     } catch (err) {
+      console.error(err);
       toast.error("No pudimos enviar tu mensaje", {
-        description: err instanceof Error ? err.message : "Intenta de nuevo en unos momentos.",
+        description: "Intenta de nuevo en unos momentos.",
       });
     } finally {
       setLoading(false);
