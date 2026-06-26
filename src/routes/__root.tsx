@@ -74,18 +74,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Professional website for Elian Angarita Julio, a clinical psychologist specializing in neuropsychology, psychopedagogy, and family constellations." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Professional website for Elian Angarita Julio, a clinical psychologist specializing in neuropsychology, psychopedagogy, and family constellations." },
+      { title: "Dra. Eliana Angarita Julio · Constelaciones Familiares" },
+      { name: "description", content: "Sitio profesional de la Dra. Eliana Angarita Julio — Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente. Sanando vínculos, transformando vidas." },
+      { name: "author", content: "Dra. Eliana Angarita Julio" },
+      { property: "og:title", content: "Dra. Eliana Angarita Julio · Constelaciones Familiares" },
+      { property: "og:description", content: "Sitio profesional de la Dra. Eliana Angarita Julio — Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente. Sanando vínculos, transformando vidas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Professional website for Elian Angarita Julio, a clinical psychologist specializing in neuropsychology, psychopedagogy, and family constellations." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/Ynv3qHALKrbiliNusHmtvYVcE983/social-images/social-1780017948526-WhatsApp_Image_2026-05-22_at_6.22.48_PM_(2).webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/Ynv3qHALKrbiliNusHmtvYVcE983/social-images/social-1780017948526-WhatsApp_Image_2026-05-22_at_6.22.48_PM_(2).webp" },
+      
+      { name: "twitter:title", content: "Dra. Eliana Angarita Julio · Constelaciones Familiares" },
+      { name: "twitter:description", content: "Sitio profesional de la Dra. Eliana Angarita Julio — Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente. Sanando vínculos, transformando vidas." },
+      { property: "og:image", content: "https://constelaciones.qualitasas.com/og-eliana.jpg" },
+      { name: "twitter:image", content: "https://constelaciones.qualitasas.com/og-eliana.jpg" },
     ],
     links: [
       {

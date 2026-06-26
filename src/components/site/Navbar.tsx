@@ -57,9 +57,9 @@ export function Navbar() {
             EA
           </span>
           <span className="hidden sm:block font-serif text-lg leading-tight">
-            Elian Angarita
+            Dra. Eliana Angarita
             <span className="block text-[10px] tracking-[0.18em] uppercase text-muted-foreground font-sans">
-              Psicóloga · Consteladora
+              Psicóloga Clínica · Consteladora
             </span>
           </span>
         </a>

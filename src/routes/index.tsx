@@ -36,40 +36,48 @@ import { Particles } from "@/components/site/Particles";
 import { Reveal } from "@/components/site/Reveal";
 import { ContactForm } from "@/components/site/ContactForm";
 
-const WHATSAPP_URL = `https://wa.me/573132655265?text=${encodeURIComponent("Hola Eliána, me gustaría agendar una sesión de Constelaciones Familiares")}`;
+const WHATSAPP_URL = `https://wa.me/573132655265?text=${encodeURIComponent("Hola Dra. Eliana, me gustaría agendar una sesión de Constelaciones Familiares")}`;
 const PHONE_DISPLAY = "+57 313 265 5265";
+const EMAIL = "elianangarita@gmail.com";
+const FACEBOOK_URL = "https://www.facebook.com/QUALITAIPS";
+const INSTAGRAM_URL = ""; // Próximamente — sin perfil activo aún
+const FULL_NAME = "Dra. Eliana Angarita Julio";
+const PRO_TITLE =
+  "Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Elian Angarita Julio · Psicóloga Infantil y Constelaciones Familiares" },
+      { title: "Dra. Eliana Angarita Julio · Constelaciones Familiares y Psicología Clínica" },
       {
         name: "description",
         content:
-          "Psicóloga infantil, Magíster en Neuropsicología, experta en Psicopedagogía y Consteladora Familiar. Sanando vínculos, transformando vidas. Bogotá y sesiones online.",
+          "Dra. Eliana Angarita Julio — Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente. Sanando vínculos, transformando vidas. Bucaramanga, Barrancabermeja y sesiones online.",
       },
-      { property: "og:title", content: "Elian Angarita Julio · Psicología y Constelaciones Familiares" },
+      { property: "og:title", content: "Dra. Eliana Angarita Julio · Constelaciones Familiares" },
       {
         property: "og:description",
-        content: "Sanando vínculos, transformando vidas. Sesiones individuales, talleres y terapia infantil.",
+        content: "Sanando vínculos, transformando vidas. Sesiones individuales, talleres y constelaciones familiares.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://constelaciones.qualitasas.com/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://constelaciones.qualitasas.com/" }],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Person",
-          name: "Elian Angarita Julio",
-          jobTitle: "Psicóloga Infantil · Consteladora Familiar",
+          name: "Eliana Angarita Julio",
+          honorificPrefix: "Dra.",
+          jobTitle: "Psicóloga Clínica · Consteladora Familiar Certificada Internacionalmente",
           telephone: "+573132655265",
+          email: "elianangarita@gmail.com",
           areaServed: "Colombia",
           description:
-            "Psicóloga infantil, Magíster en Neuropsicología, experta en Psicopedagogía y Consteladora Familiar.",
+            "Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente.",
         }),
       },
     ],
@@ -132,16 +140,16 @@ function Hero() {
           transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="font-serif text-5xl sm:text-6xl md:text-7xl leading-[1.05] text-balance text-foreground"
         >
-          Elian Angarita Julio
+          Dra. Eliana Angarita Julio
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3 }}
-          className="mt-5 text-base sm:text-lg tracking-[0.25em] uppercase text-primary"
+          className="mt-5 text-sm sm:text-base tracking-[0.18em] uppercase text-primary max-w-2xl mx-auto"
         >
-          Psicóloga Infantil · Constelaciones Familiares
+          Psicóloga Clínica · Doctoranda · Consteladora Familiar Certificada Internacionalmente
         </motion.p>
 
         <motion.p
@@ -179,10 +187,10 @@ function Hero() {
 
 /* ---------- SOBRE MÍ ---------- */
 const credentials = [
-  { icon: GraduationCap, label: "Psicóloga Infantil" },
-  { icon: Brain, label: "Magíster en Neuropsicología" },
+  { icon: GraduationCap, label: "Psicóloga Clínica" },
+  { icon: Brain, label: "Doctoranda en Psicología" },
   { icon: BookOpen, label: "Experta en Psicopedagogía" },
-  { icon: Sparkles, label: "Consteladora Familiar Certificada" },
+  { icon: Sparkles, label: "Consteladora Familiar Certificada Internacionalmente" },
 ];
 
 function About() {
@@ -195,10 +203,10 @@ function About() {
             Acompañando tu proceso de sanación
           </h2>
           <p className="mt-6 text-foreground/75 leading-relaxed">
-            Soy <strong className="text-foreground">Elian Angarita Julio</strong>, psicóloga infantil
-            con maestría en neuropsicología y experta en psicopedagogía. Mi misión es guiarte en el
-            descubrimiento y sanación de los patrones transgeneracionales que influyen en tu vida
-            actual.
+            Soy la <strong className="text-foreground">Dra. Eliana Angarita Julio</strong>, psicóloga
+            clínica, doctoranda y consteladora familiar certificada internacionalmente. Mi misión es
+            guiarte en el descubrimiento y sanación de los patrones transgeneracionales que influyen en
+            tu vida actual.
           </p>
 
           <div className="mt-8 grid sm:grid-cols-2 gap-3">
@@ -235,7 +243,7 @@ function About() {
             <div className="absolute -inset-4 bg-gradient-gold rounded-[2rem] opacity-30 blur-2xl" />
             <img
               src={elianPortrait}
-              alt="Retrato de Elian Angarita Julio"
+              alt="Retrato de la Dra. Eliana Angarita Julio"
               width={1024}
               height={1280}
               loading="lazy"
@@ -463,7 +471,7 @@ const testimonials = [
   {
     name: "María C.",
     role: "Bogotá",
-    text: "El proceso con Elian transformó la relación con mi madre. Hoy hay paz donde antes solo había dolor.",
+    text: "El proceso con la Dra. Eliana transformó la relación con mi madre. Hoy hay paz donde antes solo había dolor.",
   },
   {
     name: "Andrés P.",
@@ -642,15 +650,18 @@ function Contact() {
               </a>
             </li>
             <li>
-              <div className="flex items-center gap-4 rounded-2xl bg-card/80 backdrop-blur border border-border/60 px-5 py-4 shadow-soft">
+              <a
+                href={`mailto:${EMAIL}`}
+                className="flex items-center gap-4 rounded-2xl bg-card/80 backdrop-blur border border-border/60 px-5 py-4 shadow-soft hover:shadow-warm transition"
+              >
                 <span className="grid place-items-center w-12 h-12 rounded-full bg-secondary text-secondary-foreground">
                   <Mail className="h-5 w-5" />
                 </span>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">Email</p>
-                  <p className="font-medium">contacto@elianangarita.com</p>
+                  <p className="font-medium">{EMAIL}</p>
                 </div>
-              </div>
+              </a>
             </li>
             <li>
               <div className="flex items-center gap-4 rounded-2xl bg-card/80 backdrop-blur border border-border/60 px-5 py-4 shadow-soft">
@@ -659,7 +670,7 @@ function Contact() {
                 </span>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">Ubicación</p>
-                  <p className="font-medium">Bogotá, Colombia · Sesiones online</p>
+                  <p className="font-medium">Bucaramanga · Barrancabermeja · Sesiones online</p>
                 </div>
               </div>
             </li>
@@ -692,10 +703,10 @@ function Footer() {
             <span className="grid place-items-center w-11 h-11 rounded-full bg-gradient-gold text-primary-foreground font-serif">
               EA
             </span>
-            <p className="font-serif text-xl">Elian Angarita Julio</p>
+            <p className="font-serif text-xl">Dra. Eliana Angarita Julio</p>
           </div>
           <p className="mt-4 text-background/70 text-sm leading-relaxed max-w-xs">
-            Psicóloga infantil · Magíster en Neuropsicología · Consteladora Familiar.
+            Psicóloga Clínica · Doctoranda · Consteladora Familiar Certificada Internacionalmente.
           </p>
         </div>
 
@@ -712,10 +723,23 @@ function Footer() {
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-background/60 mb-4">Sígueme</p>
           <div className="flex gap-3">
-            <a aria-label="Instagram" href="#" className="grid place-items-center w-10 h-10 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition">
+            <span
+              aria-label="Instagram (próximamente)"
+              title="Instagram · Próximamente"
+              className="relative grid place-items-center w-10 h-10 rounded-full bg-background/10 text-background/50 cursor-default"
+            >
               <Instagram className="h-4 w-4" />
-            </a>
-            <a aria-label="Facebook" href="#" className="grid place-items-center w-10 h-10 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition">
+              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] uppercase tracking-wider text-background/40 whitespace-nowrap">
+                Pronto
+              </span>
+            </span>
+            <a
+              aria-label="Facebook"
+              href={FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid place-items-center w-10 h-10 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition"
+            >
               <Facebook className="h-4 w-4" />
             </a>
             <a aria-label="WhatsApp" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="grid place-items-center w-10 h-10 rounded-full bg-background/10 hover:bg-primary hover:text-primary-foreground transition">
@@ -726,7 +750,7 @@ function Footer() {
       </div>
 
       <div className="mt-12 pt-6 border-t border-background/15 mx-auto max-w-7xl px-6 flex flex-col sm:flex-row gap-3 items-center justify-between text-sm text-background/60">
-        <p>© 2026 Elian Angarita Julio. Todos los derechos reservados.</p>
+        <p>© 2026 Dra. Eliana Angarita Julio. Todos los derechos reservados.</p>
         <p className="flex items-center gap-1.5 font-serif italic">
           Tu mereces vivir en paz <Heart className="h-4 w-4 text-primary fill-current" />
         </p>

@@ -36,8 +36,19 @@ export function ContactForm() {
       e.currentTarget.reset();
     } catch (err) {
       console.error(err);
-      toast.error("No pudimos enviar tu mensaje", {
-        description: "Intenta de nuevo en unos momentos.",
+      // Fallback: si falla el guardado en Supabase, ofrecer enviar por WhatsApp
+      const waText = encodeURIComponent(
+        `Hola Dra. Eliana, soy ${payload.name}. ` +
+          `Interés: ${payload.service_type || "Sesión"}. ` +
+          `${payload.message} (Tel: ${payload.phone || "—"}, Email: ${payload.email})`,
+      );
+      const waUrl = `https://wa.me/573132655265?text=${waText}`;
+      toast.error("No pudimos guardar tu mensaje", {
+        description: "Puedes enviarlo directo por WhatsApp.",
+        action: {
+          label: "Enviar por WhatsApp",
+          onClick: () => window.open(waUrl, "_blank", "noopener,noreferrer"),
+        },
       });
     } finally {
       setLoading(false);
