@@ -69,18 +69,33 @@ export const Route = createFileRoute("/")({
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "Person",
-          name: "Eliana Angarita Julio",
-          honorificPrefix: "Dra.",
-          jobTitle: "Psicóloga Clínica · Consteladora Familiar Certificada Internacionalmente",
+          "@type": ["MedicalBusiness", "Psychologist"],
+          name: "Dra. Eliana Angarita Julio · Constelaciones Familiares",
+          image: "https://constelaciones.qualitasas.com/og-eliana.jpg",
+          url: "https://constelaciones.qualitasas.com/",
           telephone: "+573132655265",
           email: "elianangarita@gmail.com",
-          areaServed: "Colombia",
+          priceRange: "$$",
+          medicalSpecialty: ["Psychiatric", "Psychological"],
+          areaServed: [
+            { "@type": "City", name: "Bucaramanga" },
+            { "@type": "City", name: "Barrancabermeja" },
+            { "@type": "Country", name: "Colombia" },
+          ],
+          founder: {
+            "@type": "Person",
+            name: "Eliana Angarita Julio",
+            honorificPrefix: "Dra.",
+            jobTitle:
+              "Psicóloga Clínica · Doctoranda · Consteladora Familiar Certificada Internacionalmente",
+          },
           description:
-            "Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente.",
+            "Psicóloga Clínica, Doctoranda y Consteladora Familiar Certificada Internacionalmente. Sanando vínculos, transformando vidas.",
+          sameAs: ["https://www.facebook.com/QUALITAIPS"],
         }),
       },
     ],
+
   }),
   component: HomePage,
 });
