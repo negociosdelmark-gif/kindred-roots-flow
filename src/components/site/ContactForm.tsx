@@ -25,6 +25,7 @@ export function ContactForm() {
       phone: String(fd.get("phone") || ""),
       service_type: String(fd.get("service_type") || ""),
       message: String(fd.get("message") || ""),
+      website: String(fd.get("website") || ""),
     };
 
     setLoading(true);
@@ -60,6 +61,13 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-4">
+      {/* Honeypot anti-spam: oculto para humanos, atractivo para bots */}
+      <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+        <label>
+          No completar
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+        </label>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="block text-sm mb-1.5 text-foreground/80">Nombre</span>
