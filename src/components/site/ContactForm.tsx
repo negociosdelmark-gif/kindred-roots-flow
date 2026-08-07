@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Loader2, Send } from "lucide-react";
+import { z } from "zod";
 import { submitContactMessage } from "@/lib/contact.functions";
 
 const services = [
@@ -12,13 +13,36 @@ const services = [
   "Otro",
 ];
 
+const FormSchema = z.object({
+  name: z.string().trim().min(1, "El nombre es obligatorio").max(120, "Máximo 120 caracteres"),
+  email: z.string().trim().min(1, "El email es obligatorio").email("Formato de email inválido").max(255),
+  phone: z.string().trim().max(40, "Máximo 40 caracteres").optional().or(z.literal("")),
+  service_type: z.string().trim().max(80).optional().or(z.literal("")),
+  message: z.string().trim().min(10, "El mensaje debe tener al menos 10 caracteres").max(2000, "Máximo 2000 caracteres"),
+});
+
+type FieldErrors = Partial<Record<"name" | "email" | "phone" | "message", string>>;
+
 export function ContactForm() {
   const submit = useServerFn(submitContactMessage);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  const validateField = (name: string, value: string) => {
+    const shape = FormSchema.shape as Record<string, z.ZodTypeAny>;
+    const schema = shape[name];
+    if (!schema) return;
+    const res = schema.safeParse(value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: res.success ? undefined : res.error.issues[0]?.message,
+    }));
+  };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const payload = {
       name: String(fd.get("name") || ""),
       email: String(fd.get("email") || ""),
@@ -28,16 +52,31 @@ export function ContactForm() {
       website: String(fd.get("website") || ""),
     };
 
+    const parsed = FormSchema.safeParse(payload);
+    if (!parsed.success) {
+      const next: FieldErrors = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0] as keyof FieldErrors;
+        if (key && !next[key]) next[key] = issue.message;
+      }
+      setErrors(next);
+      toast.error("Revisa el formulario", {
+        description: "Hay campos con errores por corregir.",
+      });
+      return;
+    }
+    setErrors({});
+
     setLoading(true);
     try {
       await submit({ data: payload });
       toast.success("Mensaje enviado", {
         description: "Gracias por escribir. Te responderé muy pronto.",
       });
-      e.currentTarget.reset();
+      form.reset();
     } catch (err) {
       console.error(err);
-      // Fallback: si falla el guardado en Supabase, ofrecer enviar por WhatsApp
+      // Fallback: si falla el guardado, ofrecer enviar por WhatsApp
       const waText = encodeURIComponent(
         `Hola Dra. Eliana, soy ${payload.name}. ` +
           `Interés: ${payload.service_type || "Sesión"}. ` +
@@ -58,9 +97,16 @@ export function ContactForm() {
 
   const inputCls =
     "w-full rounded-xl border border-border bg-background/70 px-4 py-3 text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition";
+  const errCls = "border-destructive/60 focus:ring-destructive/30 focus:border-destructive/60";
+  const Err = ({ id, msg }: { id: string; msg?: string }) =>
+    msg ? (
+      <span id={id} role="alert" className="mt-1.5 block text-xs text-destructive">
+        {msg}
+      </span>
+    ) : null;
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4">
+    <form onSubmit={onSubmit} noValidate className="grid gap-4">
       {/* Honeypot anti-spam: oculto para humanos, atractivo para bots */}
       <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
         <label>
@@ -71,17 +117,45 @@ export function ContactForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="block text-sm mb-1.5 text-foreground/80">Nombre</span>
-          <input name="name" required minLength={2} maxLength={120} className={inputCls} placeholder="Tu nombre" />
+          <input
+            name="name"
+            maxLength={120}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? "err-name" : undefined}
+            onBlur={(e) => validateField("name", e.target.value)}
+            onChange={(e) => errors.name && validateField("name", e.target.value)}
+            className={`${inputCls} ${errors.name ? errCls : ""}`}
+            placeholder="Tu nombre"
+          />
+          <Err id="err-name" msg={errors.name} />
         </label>
         <label className="block">
           <span className="block text-sm mb-1.5 text-foreground/80">Email</span>
-          <input name="email" type="email" required maxLength={255} className={inputCls} placeholder="tu@email.com" />
+          <input
+            name="email"
+            type="email"
+            maxLength={255}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "err-email" : undefined}
+            onBlur={(e) => validateField("email", e.target.value)}
+            onChange={(e) => errors.email && validateField("email", e.target.value)}
+            className={`${inputCls} ${errors.email ? errCls : ""}`}
+            placeholder="tu@email.com"
+          />
+          <Err id="err-email" msg={errors.email} />
         </label>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="block text-sm mb-1.5 text-foreground/80">Teléfono</span>
-          <input name="phone" maxLength={40} className={inputCls} placeholder="+57 ..." />
+          <input
+            name="phone"
+            maxLength={40}
+            onBlur={(e) => validateField("phone", e.target.value)}
+            className={`${inputCls} ${errors.phone ? errCls : ""}`}
+            placeholder="+57 ..."
+          />
+          <Err id="err-phone" msg={errors.phone} />
         </label>
         <label className="block">
           <span className="block text-sm mb-1.5 text-foreground/80">Servicio de interés</span>
@@ -97,13 +171,16 @@ export function ContactForm() {
         <span className="block text-sm mb-1.5 text-foreground/80">Mensaje</span>
         <textarea
           name="message"
-          required
-          minLength={5}
           maxLength={2000}
           rows={5}
-          className={inputCls}
-          placeholder="Cuéntame brevemente qué te trae aquí..."
+          aria-invalid={!!errors.message}
+          aria-describedby={errors.message ? "err-message" : undefined}
+          onBlur={(e) => validateField("message", e.target.value)}
+          onChange={(e) => errors.message && validateField("message", e.target.value)}
+          className={`${inputCls} ${errors.message ? errCls : ""}`}
+          placeholder="Cuéntame brevemente qué te trae aquí... (mínimo 10 caracteres)"
         />
+        <Err id="err-message" msg={errors.message} />
       </label>
       <button
         type="submit"
