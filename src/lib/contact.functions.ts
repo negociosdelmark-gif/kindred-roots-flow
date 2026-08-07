@@ -75,5 +75,21 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     // Registrar el envío para el rate limit (fire-and-forget)
     await supabaseAdmin.from("rate_limits").insert({ scope: SCOPE, ip });
 
-    return { ok: true };
+    // Notificación por email (no bloquea el éxito del formulario)
+    let emailSent = false;
+    try {
+      const { notifyNewMessage } = await import("@/lib/notify.server");
+      const r = await notifyNewMessage({
+        name: data.name,
+        email: data.email,
+        phone: data.phone || null,
+        service_type: data.service_type || null,
+        message: data.message,
+      });
+      emailSent = r.sent;
+    } catch (e) {
+      console.error("[notifyNewMessage]", e);
+    }
+
+    return { ok: true, emailSent };
   });
