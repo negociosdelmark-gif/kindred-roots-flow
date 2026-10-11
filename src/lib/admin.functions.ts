@@ -70,6 +70,39 @@ export const deleteContactMessage = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const exportContactMessages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        search: z.string().trim().max(120).optional().or(z.literal("")),
+        dateFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+        dateTo: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+      })
+      .parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let query = supabaseAdmin
+      .from("contact_messages")
+      .select("id, name, email, phone, service_type, message, created_at");
+    if (data.search) {
+      const term = data.search.replace(/[%,()]/g, " ").trim();
+      if (term) query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%`);
+    }
+    if (data.dateFrom) query = query.gte("created_at", `${data.dateFrom}T00:00:00.000Z`);
+    if (data.dateTo) query = query.lte("created_at", `${data.dateTo}T23:59:59.999Z`);
+    const { data: rows, error } = await query
+      .order("created_at", { ascending: false })
+      .limit(5000);
+    if (error) {
+      console.error("[exportContactMessages]", error);
+      throw new Error("No se pudo exportar.");
+    }
+    return { items: rows ?? [] };
+  });
+
 export const getMyAdminStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
