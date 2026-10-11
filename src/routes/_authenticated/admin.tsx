@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   listContactMessages,
   deleteContactMessage,
+  exportContactMessages,
   getMyAdminStatus,
 } from "@/lib/admin.functions";
 
@@ -59,6 +60,7 @@ function AdminPage() {
   const qc = useQueryClient();
   const list = useServerFn(listContactMessages);
   const del = useServerFn(deleteContactMessage);
+  const exp = useServerFn(exportContactMessages);
   const status = useServerFn(getMyAdminStatus);
 
   const statusQ = useQuery({ queryKey: ["admin-status"], queryFn: () => status() });
@@ -127,8 +129,15 @@ function AdminPage() {
     setFilters({ search: "", dateFrom: "", dateTo: "" });
   };
 
-  const exportCsv = () => {
-    const rows = (messagesQ.data?.items ?? []) as Msg[];
+  const exportCsv = async () => {
+    let rows: Msg[] = [];
+    try {
+      const r = await exp({ data: filters });
+      rows = r.items as Msg[];
+    } catch (e: any) {
+      toast.error("Error", { description: e?.message ?? "" });
+      return;
+    }
     if (rows.length === 0) {
       toast.error("No hay mensajes para exportar");
       return;
@@ -137,11 +146,12 @@ function AdminPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `mensajes-pagina-${page}.csv`;
+    a.download = `mensajes_${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    toast.success(`${rows.length} mensajes exportados`);
   };
 
   if (statusQ.isLoading) {
