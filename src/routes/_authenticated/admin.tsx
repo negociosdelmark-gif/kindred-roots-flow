@@ -21,6 +21,8 @@ import {
   listContactMessages,
   deleteContactMessage,
   exportContactMessages,
+  logAdminLogin,
+  listAdminActivity,
   getMyAdminStatus,
 } from "@/lib/admin.functions";
 
@@ -61,9 +63,26 @@ function AdminPage() {
   const list = useServerFn(listContactMessages);
   const del = useServerFn(deleteContactMessage);
   const exp = useServerFn(exportContactMessages);
+  const logLogin = useServerFn(logAdminLogin);
+  const listAct = useServerFn(listAdminActivity);
+  const [showLog, setShowLog] = useState(false);
   const status = useServerFn(getMyAdminStatus);
 
   const statusQ = useQuery({ queryKey: ["admin-status"], queryFn: () => status() });
+  const activityQ = useQuery({
+    queryKey: ["admin-activity"],
+    queryFn: () => listAct(),
+    enabled: statusQ.data?.isAdmin === true && showLog,
+  });
+
+  useEffect(() => {
+    if (statusQ.data?.isAdmin !== true) return;
+    const key = `admin_login_logged_${statusQ.data.userId}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    logLogin().catch(() => sessionStorage.removeItem(key));
+  }, [statusQ.data, logLogin]);
+
   const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
 
@@ -89,6 +108,7 @@ function AdminPage() {
       toast.success("Mensaje eliminado");
       setPendingDelete(null);
       qc.invalidateQueries({ queryKey: ["contact-messages"] });
+      qc.invalidateQueries({ queryKey: ["admin-activity"] });
     },
     onError: (e: any) => toast.error("Error", { description: e?.message ?? "" }),
   });
@@ -152,6 +172,7 @@ function AdminPage() {
     a.remove();
     URL.revokeObjectURL(url);
     toast.success(`${rows.length} mensajes exportados`);
+    qc.invalidateQueries({ queryKey: ["admin-activity"] });
   };
 
   if (statusQ.isLoading) {
@@ -261,6 +282,39 @@ function AdminPage() {
               <Download className="h-4 w-4" /> CSV
             </button>
           </div>
+        </section>
+
+        <section className="mt-4 rounded-2xl border border-border bg-card p-4">
+          <button
+            onClick={() => setShowLog((v) => !v)}
+            className="text-sm font-medium text-foreground hover:underline"
+          >
+            {showLog ? "Ocultar" : "Ver"} registro de actividad
+          </button>
+          {showLog && (
+            <div className="mt-3">
+              {activityQ.isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : (activityQ.data?.items ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground">Sin actividad registrada.</p>
+              ) : (
+                <ul className="divide-y divide-border text-sm">
+                  {(activityQ.data?.items ?? []).map((a: any) => (
+                    <li key={a.id} className="flex flex-wrap gap-x-3 py-2">
+                      <span className="text-muted-foreground">
+                        {new Date(a.created_at).toLocaleString("es-CO")}
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {a.action === "login" ? "Inicio de sesión" : a.action === "export" ? "Exportó CSV" : a.action === "delete" ? "Eliminó mensaje" : a.action}
+                      </span>
+                      {a.details && <span className="text-muted-foreground">{a.details}</span>}
+                      {a.user_email && <span className="text-muted-foreground">· {a.user_email}</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </section>
 
         {messagesQ.isLoading ? (
