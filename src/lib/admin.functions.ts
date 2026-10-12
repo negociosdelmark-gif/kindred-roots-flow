@@ -17,6 +17,49 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
   if (!data) throw new Error("Acceso denegado. Se requiere rol de administrador.");
 }
 
+async function logActivity(
+  context: { userId: string; claims?: any },
+  action: string,
+  details?: string,
+) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("admin_activity").insert({
+      user_id: context.userId,
+      user_email: context.claims?.email ?? null,
+      action,
+      details: details ?? null,
+    });
+  } catch (e) {
+    console.error("[logActivity]", e);
+  }
+}
+
+export const logAdminLogin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    await logActivity(context, "login");
+    return { ok: true };
+  });
+
+export const listAdminActivity = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("admin_activity")
+      .select("id, user_email, action, details, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) {
+      console.error("[listAdminActivity]", error);
+      throw new Error("No se pudo cargar el registro.");
+    }
+    return { items: data ?? [] };
+  });
+
 export const listContactMessages = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
@@ -62,11 +105,14 @@ export const deleteContactMessage = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: old } = await supabaseAdmin
+      .from("contact_messages").select("name, email").eq("id", data.id).maybeSingle();
     const { error } = await supabaseAdmin.from("contact_messages").delete().eq("id", data.id);
     if (error) {
       console.error("[deleteContactMessage]", error);
       throw new Error("No se pudo eliminar el mensaje.");
     }
+    await logActivity(context, "delete", old ? `${old.name} <${old.email}>` : data.id);
     return { ok: true };
   });
 
@@ -100,6 +146,8 @@ export const exportContactMessages = createServerFn({ method: "POST" })
       console.error("[exportContactMessages]", error);
       throw new Error("No se pudo exportar.");
     }
+    const f = [data.search && `búsqueda "${data.search}"`, data.dateFrom && `desde ${data.dateFrom}`, data.dateTo && `hasta ${data.dateTo}`].filter(Boolean).join(", ");
+    await logActivity(context, "export", `${rows?.length ?? 0} mensajes${f ? ` (${f})` : ""}`);
     return { items: rows ?? [] };
   });
 
